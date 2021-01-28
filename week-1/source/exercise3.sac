@@ -1,0 +1,7 @@
+use StdIO: all;
+use Array: all;
+int main()
+{
+    print ( reshape ([5,2,2] , genarray ([4] , [0,0,0,0,1])));
+    return 0;
+}

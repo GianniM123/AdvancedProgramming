@@ -1,0 +1,73 @@
+\documentclass[a4paper]{article}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage[export]{adjustbox}[2011/08/13]
+\usepackage[top=40pt,bottom=40pt,left=90pt,right=90pt]{geometry}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage[explicit]{titlesec}
+\usepackage[T1]{fontenc} %use different encoding (copy from pdf is now possible}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usepackage{color}
+\definecolor{light-gray}{gray}{0.95}
+
+\lstset{
+	language=C++,
+	morekeywords={seperateGraphs, push_back, discoverGraph, size, removeNodeWithSameCost, approximationStep, removeNode, consistSameCostInList, consistSameCostInListAndNotInSolution, removeNodeWithSameCostAndNotInSolution,optimize, remove, pop, front, push},
+    numbers=left,
+    breaklines=true,
+        basicstyle=\small, %or \small or \footnotesize etc.
+    backgroundcolor=\color{light-gray},
+    tabsize=4,
+    literate={\ \ }{{\ }}1
+}
+
+
+\title{Advanced Programming }
+\author{Martijn Vogelaar 1047391 \\ Gianni Monteban 1047546}
+\begin{document}
+
+\maketitle
+
+\section*{Exercise 1.In all these examples, the product of the shape vector matches the length of the data vector.What do you expect to happen, if this condition does not hold?}
+I expect that the program wouldn't compile
+\section*{Exercise 2.The arguments ofreshapeare vectors, i.e. arrays of dimensionality 1. Can they be specifiedbyeexpressions themselves?}
+Yes they can.
+\begin{verbatim}
+reshape([], reshape([1],[1]))
+\end{verbatim}
+\section*{Exercise 3.Given the language constructs introduced so far, can you define an array that would printas}
+\begin{verbatim}
+reshape ([5,2,2] , genarray ([4] , [0,0,0,0,1]))
+\end{verbatim}
+\section*{Exercise 4.What result do you expect from the following SAC program?}
+\begin{verbatim}
+    use StdIO: all;
+    use Array: all;
+    
+    int main()
+    {
+        a = [1,2,3,4];
+        b = [a,a];
+        
+        a = modarray(modarray(a, [0], 0), [1], 0);
+        b = modarray(b, [0], a);
+        print(b);
+        
+        return 0;
+    }
+\end{verbatim}
+\begin{verbatim}
+    0 0 3 4
+    1 2 3 4
+\end{verbatim}
+
+\end{document}
