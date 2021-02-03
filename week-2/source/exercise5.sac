@@ -1,0 +1,13 @@
+use StdIO: all;
+use Array: all;
+int main()
+{
+    mat = reshape([3,0,5],[]);
+    print(mat[[]]);
+    print(mat[[1]]);
+    // print(mat[[1,0]]); -- fails?
+    mat2 = mat[reshape([2,0], [])];
+    // print(dim(mat2)); //-- unprintable?
+    return 0;
+}
+

@@ -1,0 +1,78 @@
+\documentclass[a4paper]{article}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage[export]{adjustbox}[2011/08/13]
+\usepackage[top=40pt,bottom=40pt,left=90pt,right=90pt]{geometry}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage[explicit]{titlesec}
+\usepackage[T1]{fontenc} %use different encoding (copy from pdf is now possible}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usepackage{color}
+\definecolor{light-gray}{gray}{0.95}
+
+\lstset{
+	language=C++,
+	morekeywords={seperateGraphs, push_back, discoverGraph, size, removeNodeWithSameCost, approximationStep, removeNode, consistSameCostInList, consistSameCostInListAndNotInSolution, removeNodeWithSameCostAndNotInSolution,optimize, remove, pop, front, push},
+    numbers=left,
+    breaklines=true,
+        basicstyle=\small, %or \small or \footnotesize etc.
+    backgroundcolor=\color{light-gray},
+    tabsize=4,
+    literate={\ \ }{{\ }}1
+}
+
+
+\title{Advanced Programming }
+\author{Martijn Vogelaar 1047391 \\ Gianni Monteban 1047546}
+\begin{document}
+
+\maketitle
+
+\section*{Exercise 5. Assuming mat to be defined as in the previous example, what results do you expect from the following expressions:}
+\subsection*{([3,0,5], [])[[]]}
+dim(3)\\
+shape<3,0,5>\\
+<>
+\subsection*{([3,0,5], [])[[1]]}
+dim(2)\\
+shape(0,5)\\
+<>
+\subsection*{([3,0,5], [])[[1,0]]}
+error, acces at non existing part
+\subsection*{mat[reshape([2,0], [])]}
+can't be printed ??
+\section*{Exercise 6. What results do you expect from the following expressions:}
+\subsection*{min(reshape([3,0,5], []), 42)}
+dim(3)\\
+shape([3,0,5])\\
+<>
+\subsection*{reshape([3,0,5], []) + reshape([3,0,5], [])}
+dim(3)\\
+shape([3,0,5])\\
+<>
+\subsection*{reshape([1,1], [1]) + reshape([1], [1])}
+error since the shapes are different
+
+\section*{Exercise 7. Which of the following expressions can be reformulated in terms of take,++, and the basic operations defined in the previous parts?}
+\subsection*{drop (v, a)}
+impossible, drop is exactly opossite of take.
+\subsection*{tile (v, o, a)}
+impossible, due to the offset it is impossible to just take the middle part of an array.
+\subsection*{shift ([n], e, a)}
+\subsection*{shift ([m,n], e, a)}
+\subsection*{rotate ([n], a)}
+\subsection*{rotate ([m,n], a)}
+\subsection*{Can we define the general versions of shift and rotate as well?}
+\section*{Exercise 8. All operations introduced in this part apply to all elements of the array they are applied to. Given the array operations introduced so far, can you specify row-wise or column-wise summationsfor matrices? Try to specify these operations for a 2 by 3 matrix first.}
+
+
+\end{document}
