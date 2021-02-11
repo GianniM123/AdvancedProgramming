@@ -1,0 +1,21 @@
+use StdIO: all;
+use Array: all;
+
+
+//[+] contains at least 1 Dim array
+//[*] is at least a scalar
+int[*] sumOuter( int[+] a)
+{
+    s = [shape(a)[[0]]];
+    b = with{
+        ([0] <= iv < s): a[iv];
+    } : fold(+,0);
+    return b;
+}
+
+int main()
+{
+    print(sumOuter([[[1,2,3],[4,5,6], [7,8,9]]]));
+    return 0;
+}
+

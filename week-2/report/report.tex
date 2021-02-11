@@ -66,7 +66,7 @@ error since the shapes are different
 \subsection*{drop (v, a)}
 It is possible with the following formula: 
 \begin{verbatim}
-    take((abs(v)/-v) * ((shape(vect) - (v*v/(abs(v))) )),vect)
+    take((abs(v)/-v) * ((shape(a) - (v*v/(abs(v))) )),a)
 \end{verbatim}
 \subsection*{tile (v, o, a)}
 impossible, due to the offset it is impossible to just take the middle part of an array.
