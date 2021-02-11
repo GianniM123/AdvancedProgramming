@@ -1,0 +1,26 @@
+use StdIO: all;
+use Array: all;
+use Numerical: all;
+
+int main()
+{
+    vect = [1,2,3,4,5,6,7,8,9];
+    vect = [vect,vect+10,vect+20,vect+30];
+
+    n = [-3,-3];
+    print(rotate (n, vect));
+    // print(drop(-n,vect));
+    // print(drop(abs(shape(vect) -n),vect));
+    print(drop(shape(vect) -n,vect) ++ drop(-n,vect) ++ drop(-shape(vect) -n,vect));
+    //print(take((abs(n)/-n) * ((n*n/(abs(n) ))),vect) ++ take(shape(vect)-n,vect));
+    //print(take(-shape(vect)-n,vect) ++ take((abs(n)/-n) * ((n*n/(abs(n) ))),vect) );
+
+    //print(take(shape(vect),take(-shape(vect)-n,vect)));
+    
+    //
+    //take((abs((shape(vect) -n))/-(shape(vect) -n)) * ((shape(vect) - ((shape(vect) -n)*(shape(vect) -n)/(abs((shape(vect) -n)))) )),vect)
+    //take((abs(-n)/n) * ((shape(vect) - (-n*-n/(abs(-n))) )),vect)
+    //take((abs((-shape(vect) -n))/-(-shape(vect) -n)) * ((shape(vect) - ((-shape(vect) -n)*(-shape(vect) -n)/(abs((-shape(vect) -n)))) )),vect)
+    //take((abs(v)/-v) * ((shape(vect) - (v*v/(abs(v))) )),vect)
+    return 0;
+}

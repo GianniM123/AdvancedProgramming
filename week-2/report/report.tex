@@ -38,15 +38,15 @@
 \maketitle
 
 \section*{Exercise 5. Assuming mat to be defined as in the previous example, what results do you expect from the following expressions:}
-\subsection*{([3,0,5], [])[[]]}
+\subsection*{reshape([3,0,5], [])[[]]}
 dim(3)\\
 shape<3,0,5>\\
 <>
-\subsection*{([3,0,5], [])[[1]]}
+\subsection*{reshape([3,0,5], [])[[1]]}
 dim(2)\\
 shape(0,5)\\
 <>
-\subsection*{([3,0,5], [])[[1,0]]}
+\subsection*{reshape([3,0,5], [])[[1,0]]}
 error, acces at non existing part
 \subsection*{mat[reshape([2,0], [])]}
 can't be printed ??
@@ -64,15 +64,47 @@ error since the shapes are different
 
 \section*{Exercise 7. Which of the following expressions can be reformulated in terms of take,++, and the basic operations defined in the previous parts?}
 \subsection*{drop (v, a)}
-impossible, drop is exactly opossite of take.
+It is possible with the following formula: 
+\begin{verbatim}
+    take((abs(v)/-v) * ((shape(vect) - (v*v/(abs(v))) )),vect)
+\end{verbatim}
 \subsection*{tile (v, o, a)}
 impossible, due to the offset it is impossible to just take the middle part of an array.
 \subsection*{shift ([n], e, a)}
-\subsection*{shift ([m,n], e, a)}
-\subsection*{rotate ([n], a)}
-\subsection*{rotate ([m,n], a)}
-\subsection*{Can we define the general versions of shift and rotate as well?}
-\section*{Exercise 8. All operations introduced in this part apply to all elements of the array they are applied to. Given the array operations introduced so far, can you specify row-wise or column-wise summationsfor matrices? Try to specify these operations for a 2 by 3 matrix first.}
+\begin{verbatim}
+    arr =[n]
+    take(shape(vect),take(-shape(vect)-arr,vect))
+\end{verbatim}
 
+\subsection*{shift ([m,n], e, a)}
+\begin{verbatim}
+    arr = [m,n]
+    take(shape(mat),take(-shape(mat)-arr,mat))
+\end{verbatim}
+
+\subsection*{rotate ([n], a)}
+We couldn't rewrite it to a take or ++. But we could write it into a drop
+\begin{verbatim}
+    drop(shape(vect) -n,vect) ++ drop(-n,vect) ++ drop(-shape(vect) -n,vect)
+\end{verbatim}
+\subsection*{rotate ([m,n], a)}
+It should be possible only we couldn't find it.
+\subsection*{Can we define the general versions of shift and rotate as well?}
+shift:
+\begin{verbatim}
+    take(shape(vect),take(-shape(vect)-v,vect))
+\end{verbatim}
+\section*{Exercise 8. All operations introduced in this part apply to all elements of the array they are applied to. Given the array operations introduced so far, can you specify row-wise or column-wise summationsfor matrices? Try to specify these operations for a 2 by 3 matrix first.}
+\begin{verbatim}
+    mat = [1,2,3,4,5,6];
+    mat = reshape([2,3], mat);
+
+    print(sum(tile([2,1],[0,0],mat)));
+    print(sum(tile([2,1],[0,1],mat)));
+    print(sum(tile([2,1],[0,2],mat)));
+
+    print(sum(tile([1,3],[0,0],mat)));
+    print(sum(tile([1,3],[1,0],mat)));
+\end{verbatim}
 
 \end{document}

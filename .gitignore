@@ -74,3 +74,4 @@ dkms.conf
 *.fdb_latexmk
 
 *.c
+.vscode/
