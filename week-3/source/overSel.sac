@@ -1,0 +1,22 @@
+use StdIO: all;
+use Array: all;
+
+
+//[+] contains at least 1 Dim array
+//[*] is at least a scalar
+int[*] overSel(  int[+] iv, int[*] a){
+    arr = {[k] -> a[iv[[k]]]};
+    return arr;
+}
+
+int main()
+{
+    print(overSel ( [[0,0], [1,1],[1,2]],  [[1,2,3],[4,5,6]])); //[1, 5, 6]
+    print(overSel ([[0],[0],[1]],[[1,2,3],[4,5,6]]) ); //[[1,2,3],[1,2,3],[4,5,6]]
+    print(overSel ([[0],[0],[1]], [[[1,2,3]],[[4,5,6]]])); //[[[1,2,3]],[[1,2,3]],[[4,5,6]]]
+    print(overSel ([[1],[0]],[[[1,2],[3,4]],[[5,6],[7,8]]])); //[[[5,6],[7,8]],[[1,2],[3,4]]]
+    return 0;
+}
+
+
+

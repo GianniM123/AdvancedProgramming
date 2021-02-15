@@ -11,6 +11,8 @@ int[.,.] unit(int n){
 
 int main()
 {
+    print(unit(2));
+    print(unit(3));
     print(unit(5));
     return 0;
 }
