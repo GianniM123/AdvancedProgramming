@@ -22,22 +22,19 @@ complex[.,.] genComplexArray( int[2] shp, complex cmin, complex cmax)
 {
   a =  genarray(shp, cmin);
   diff = cmax-cmin;
+  d = (double[2])diff;
   z = shp[[0]];
   z = tod(z);
-  x=norm(diff)/z;
-  print(x);
-  print(cmin + toc(x));
-  print(cmin - toc(x));
+  x=d[[0]]/tod(shp[[1]]);
+  y=d[[1]]/tod(shp[[0]]);
 
-print(cmin);
-print(cmax);
-print(cmax-cmin);
+  for(i = 0; i <shp[[0]]; i++){
+    for(j=0; j < shp[[1]]; j++){
+      a[[i,j]] = a[[i,j]] + (complex)[tod(j)*x,tod(i)*y];// + toc(tod(i)*y);
+    }
+  }
 
-  // [0,0] = cmin
-  /**
-   * fill in here...
-   */
-   return a;
+  return a;
 }
 
 
@@ -57,10 +54,12 @@ inline
 int escapeTime(complex z, int depth)
 {
   originalDepth = depth;
-  c = norm(z);
-  while (abs(c) < 2d && depth > 0)
+  c = z;
+  print(norm(c));
+  while (abs(norm(c)) <= 2d && depth >= 0)
   {
-    c = c*c+norm(z);
+    c = toc(normSq(c)+norm(z));
+    print(norm(c));
     depth--;
   }
   return (originalDepth - depth);
