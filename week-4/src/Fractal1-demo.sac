@@ -33,7 +33,7 @@ int main()
    print( a, 0, 2);
 
    b = escapeTime( a, 1024);
-   print( "%5d", b);
+   print(b);
 
    return 0;
 }

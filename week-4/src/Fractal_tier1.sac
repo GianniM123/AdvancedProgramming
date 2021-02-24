@@ -2,6 +2,7 @@ module Fractal_tier1;
 
 use Structures: all;
 use Numerical: all;
+use StdIO: all;
 
 export all;
 
@@ -19,9 +20,24 @@ export all;
 inline
 complex[.,.] genComplexArray( int[2] shp, complex cmin, complex cmax)
 {
+  a =  genarray(shp, cmin);
+  diff = cmax-cmin;
+  z = shp[[0]];
+  z = tod(z);
+  x=norm(diff)/z;
+  print(x);
+  print(cmin + toc(x));
+  print(cmin - toc(x));
+
+print(cmin);
+print(cmax);
+print(cmax-cmin);
+
+  // [0,0] = cmin
   /**
    * fill in here...
    */
+   return a;
 }
 
 
@@ -36,13 +52,20 @@ complex[.,.] genComplexArray( int[2] shp, complex cmin, complex cmax)
  *
  *   @return number of iterations done
  *****************************************************************************/
+
 inline
 int escapeTime(complex z, int depth)
 {
-  /**
-   * fill in here...
-   */
+  originalDepth = depth;
+  c = norm(z);
+  while (abs(c) < 2d && depth > 0)
+  {
+    c = c*c+norm(z);
+    depth--;
+  }
+  return (originalDepth - depth);
 }
+
 
 /** <!--*******************************************************************-->
  *
@@ -53,11 +76,18 @@ int escapeTime(complex z, int depth)
  *****************************************************************************/
 
 inline
-int[*] escapeTime( complex[*] plane, int depth)
+int[*] escapeTime( complex[*] z, int depth)
 {
-  /**
-   * fill in here...
-   */
+  c = shape(z)[[0]];
+  l = genarray(shape(z),0);
+  for(i = 0; i < c; i++)
+  {
+    l[[i]] = escapeTime(z[[i]], depth);
+  }
+  // print(a);
+
+  //b = escapeTime(plane[[0]],depth);
+  return l;
 }
 
 /** <!--*******************************************************************-->
