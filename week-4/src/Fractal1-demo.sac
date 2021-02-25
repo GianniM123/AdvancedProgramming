@@ -32,8 +32,8 @@ int main()
    a = genComplexArray( [6,4], toc( [-2.2, 1.0]), toc([0.8, -1.0]));
    print( a, 0, 2);
 
-   b = escapeTime( a[[0,3]], 1024);
-   print(b);
+   b = escapeTime( a, 1024);
+   print( "%5d", b);
 
    return 0;
 }
