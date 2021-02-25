@@ -55,7 +55,7 @@ int escapeTime(complex z, int depth)
 {
   originalDepth = depth;
   c = z;
-  while (!(norm(c) > 2d) && !(depth < 0))
+  while (abs(norm(c)) <= 2d && depth >= 0)
   {
     c = c*c+z;
     depth--;
