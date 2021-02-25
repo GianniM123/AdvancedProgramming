@@ -35,7 +35,8 @@ color[.,.] stretchRgb( color[.,.] pic, int stretch)
 int main()
 {
   disp = initMultiDisplay( [2,2], EXPAND * [YRES,XRES] );
-
+  Clock::sleep(1);
+  
   cmin = [toc( -2.2, 1.0)];
   cmax = [toc( 0.8, -1.0)];
 

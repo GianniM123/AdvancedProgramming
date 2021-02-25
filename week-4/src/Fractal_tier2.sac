@@ -127,8 +127,7 @@ Color8::color[.,.] doubleArrayToRGB( double[.,.] a)
   {
     for(j = 0; j < shape(a)[[1]]; j++)
     {
-      x = toi(abs(a[[i,j]])* 15.80514943476102614055 ) % 360;
-      print(x);
+      x = toi(abs(a[[i,j]])* 16d) % 360;
       retVal[[i,j]] = (int[3])Color8::Hsb2Rgb(x,60,80);
     }
 
