@@ -81,9 +81,6 @@ int[*] escapeTime( complex[*] z, int depth)
   {
     l[[i]] = escapeTime(z[[i]], depth);
   }
-  // print(a);
-
-  //b = escapeTime(plane[[0]],depth);
   return l;
 }
 

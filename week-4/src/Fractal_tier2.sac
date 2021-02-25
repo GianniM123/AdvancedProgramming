@@ -2,7 +2,7 @@ module Fractal_tier2;
 
 use Structures: all;
 use Numerical: all;
-
+use StdIO: all;
 export all;
 
 /** <!--*******************************************************************-->
@@ -18,9 +18,14 @@ export all;
  *****************************************************************************/
 int, complex escapeTimeAndValue(complex z, int depth)
 {
-  /**
-   * fill in here...
-   */
+  originalDepth = depth;
+  c = z;
+  while (abs(norm(c)) <= 2d && depth >= 0)
+  {
+    c = c*c+z;
+    depth--;
+  }
+  return ((originalDepth - depth),c);
 }
 
 /** <!--*******************************************************************-->
@@ -33,9 +38,19 @@ int, complex escapeTimeAndValue(complex z, int depth)
 inline
 int[.,.], complex[.,.] escapeTimeAndValue( complex[.,.] plane, int depth)
 {
-  /**
-   * fill in here...
-   */
+  l = genarray(shape(plane),0);
+  compl = genarray(shape(plane),toc(0.0));
+  for(i = 0; i < shape(plane)[[0]]; i++)
+  {
+    for(j = 0; j < shape(plane)[[1]]; j++)
+    {
+      a, b = escapeTimeAndValue(plane[[i,j]], depth);
+      l[[i,j]] = a;
+      compl[[i,j]] = b; 
+    }
+
+  }
+  return (l,compl);
 }
 
 
@@ -54,6 +69,31 @@ int[.,.], complex[.,.] escapeTimeAndValue( complex[.,.] plane, int depth)
 inline
 double[*] normalizedIterationCount(int[*] n, complex[*] zn)
 {
+  retVal = 0.0;
+  if (!all(shape(n) == shape(zn)))
+  {
+    print("error, incorrect shape");
+    retVal = 0.0;
+  }
+  if(dim(n) == 0)
+  {
+    if(abs(norm(zn)) <= 2d){
+      retVal =  0.0;
+    }
+    else{
+      retVal = tod(n+1) - log2( log2( abs(norm(zn))));
+    }
+  }
+  else
+  {
+    retVal = genarray(shape(n),0.0);
+    for(i = 0; i < shape(n)[0]; i++)
+    {
+      retVal[[i]] = normalizedIterationCount(n[[i]],zn[[i]]);
+    }
+  }
+  
+  return retVal;
   /**
    * fill in here...
    */
@@ -71,15 +111,31 @@ double[*] normalizedIterationCount(int[*] n, complex[*] zn)
  *              conversion.
  *  
  *   @return RGB values
+ * 
+ * doubleArrayToRGBmaps the normalized iteration counts, which are double values, to anRGB colour-triple. 
+ * To derive an RGB value, first scale all values such that they are in theinterval 0≤x<360. 
+ * This value can then be used as the hue in the HSB model.Hint: 
+ * The moduleColor8defines a functionHsb2Rgbthat converts a HSB color descriptioninto its corresponding RGB representation
+ * 
+ * 
  *****************************************************************************/
 inline
 Color8::color[.,.] doubleArrayToRGB( double[.,.] a)
 {
+  retVal = genarray(shape(a),[0,0,0]);
+  for(i = 0; i < shape(a)[[0]]; i++)
+  {
+    for(j = 0; j < shape(a)[[1]]; j++)
+    {
+      x = toi(abs(a[[i,j]])* 15.80514943476102614055 ) % 360;
+      print(x);
+      retVal[[i,j]] = (int[3])Color8::Hsb2Rgb(x,60,80);
+    }
+
+  }
+  retVal = {[i,j] -> (Color8::color)retVal[[i,j]]};
+  return retVal;
   /**
    * fill in here...
    */
 }
-
-
-
-
