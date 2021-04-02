@@ -1,3 +1,5 @@
+//Gianni Monteban & Martijn Vogelaar
+
 module Fractal_tier1;
 
 use Structures: all;

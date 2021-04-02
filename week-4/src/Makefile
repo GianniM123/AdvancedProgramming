@@ -10,7 +10,7 @@
 #      target, e.g. `f1_demo`.
 
 SAC2C := sac2c
-SFLAGS := -v0 -check tc
+SFLAGS := -v0 -check tc -noPHM
 
 f1_demo: Fractal1-demo.sac fractal1
 	$(SAC2C) $(SFLAGS) -o $@ $<
