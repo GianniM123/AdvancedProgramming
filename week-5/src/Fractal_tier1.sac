@@ -1,0 +1,109 @@
+//Gianni Monteban & Martijn Vogelaar
+
+module Fractal_tier1;
+
+use Structures: all;
+use Numerical: all;
+use StdIO: all;
+
+export all;
+
+
+/** <!--*******************************************************************-->
+ * 
+ * @fn : complex[.,.] genComplexArray( int[2] shp, complex cmin, complex cmax)
+ *
+ *   @brief generates an array of complex numbers with shape "shp" and 
+ *          linearly increasing/decreasing values between "cmin" and "cmax".
+ *          The element at index [0,0] should be "cmin". Increases in the
+ *          2nd index (!) should reflect increases in the real values!
+ *
+ *****************************************************************************/
+inline
+complex[.,.] genComplexArray( int[2] shp, complex cmin, complex cmax)
+{
+  a =  genarray(shp, cmin);
+  diff = cmax-cmin;
+  d = (double[2])diff;
+  z = shp[[0]];
+  z = tod(z);
+  x=d[[0]]/tod(shp[[1]]);
+  y=d[[1]]/tod(shp[[0]]);
+
+  for(i = 0; i <shp[[0]]; i++){
+    for(j=0; j < shp[[1]]; j++){
+      a[[i,j]] = a[[i,j]] + (complex)[tod(j)*x,tod(i)*y];// + toc(tod(i)*y);
+    }
+  }
+
+  return a;
+}
+
+
+/** <!--*******************************************************************-->
+ * 
+ * @fn int escapeTime(complex z, int depth)
+ *
+ *   @brief iteratively computes c = c*c + z starting from c=z.
+ *          terminates either when |c| > 2 or depth iterations
+ *          have been performed.
+ *          NB: Besides "norm" there exists "normSq" which computes |c|^2.
+ *
+ *   @return number of iterations done
+ *****************************************************************************/
+
+inline
+int escapeTime(complex z, int depth)
+{
+  originalDepth = depth;
+  c = z;
+  while (abs(norm(c)) <= 2d && depth >= 0)
+  {
+    c = c*c+z;
+    depth--;
+  }
+  return (originalDepth - depth);
+}
+
+
+/** <!--*******************************************************************-->
+ *
+ * @fn int[*] escapeTime(complex[*] z, int depth)
+ *
+ *   @brief maps escapeTime to an entire array of complex numbers
+ *
+ *****************************************************************************/
+
+inline
+int[*] escapeTime( complex[*] z, int depth)
+{
+  c = shape(z)[[0]];
+  l = genarray(shape(z),0);
+  for(i = 0; i < c; i++)
+  {
+    l[[i]] = escapeTime(z[[i]], depth);
+  }
+  return l;
+}
+
+/** <!--*******************************************************************-->
+ *
+ * @fn color[.,.] intArrayToMonochrome( int[.,.] a)
+ *
+ *   @brief converts non-negative integer values into color values using
+ *          a logarithmic 256 element clut from black to red.
+ *****************************************************************************/
+inline
+Color8::color[.,.] intArrayToMonochrome( int[.,.] a)
+{
+  clut = genLogarithmicClut( 0.4d, 0.9d, Color8::black(), Color8::red());
+
+  a = (a * 255) / maxval(a);
+
+  d = with {
+        ( .<= iv <= .) : clut[ a[ iv]];
+      } : genarray( shape(a), Color8::black());
+
+  return( d);
+}
+
