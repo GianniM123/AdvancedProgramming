@@ -75,3 +75,5 @@ dkms.conf
 
 *.c
 .vscode/
+
+*/Clean\ System\ Files/*
