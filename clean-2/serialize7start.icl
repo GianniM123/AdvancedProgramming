@@ -53,8 +53,8 @@ instance serialize Int where
 // ---
 
 instance serialize UNIT where
-  write _ c = ["UNIT":c]
-  read ["UNIT":r] = Just (UNIT,r)
+  write _ c = c
+  read r = Just (UNIT,r)
   read _ = Nothing
 
 instance serialize (EITHER a b) | serialize a & serialize b where
@@ -71,8 +71,8 @@ instance serialize (EITHER a b) | serialize a & serialize b where
   read _ = Nothing
 
 instance serialize (PAIR a b) | serialize a & serialize b where
-  write (PAIR a b) l = let ll = write b l in ["PAIR" : write a ll]
-  read ["PAIR":r] = case read r of
+  write (PAIR a b) l = let ll = write b l in  write a ll
+  read r = case read r of
                       Just (y,z) = case read z of
                                     Just (x,s) = Just (PAIR y x, s)
                                     Nothing = Nothing
