@@ -54,33 +54,34 @@ instance serialize Int where
 
 instance serialize UNIT where
   write _ c = c
+  read [] = Nothing
   read r = Just (UNIT,r)
-  read _ = Nothing
 
 instance serialize (EITHER a b) | serialize a & serialize b where
-  write (RIGHT b) l = ["RIGHT" : (write b l)]
-  write (LEFT a) l = ["LEFT" : (write a l)]
-  read ["LEFT":r] = let x = read r in 
-                      case x of
-                        Just(y,z) = Just (LEFT y,z)
+  write (RIGHT b) l = write b l
+  write (LEFT a) l = write a l
+  read [] = Nothing
+  read r = case read r of
+            Just(x,y) = Just (RIGHT x , y)
+            Nothing = case read r of
+                        Just (a,b) = Just (LEFT a, b)
                         Nothing = Nothing
-  read ["RIGHT":r] = let x = read r in 
-                      case x of
-                        Just(y,z) = Just (RIGHT y,z)
-                        Nothing = Nothing
-  read _ = Nothing
+
+
+
 
 instance serialize (PAIR a b) | serialize a & serialize b where
   write (PAIR a b) l = let ll = write b l in  write a ll
+  read [] = Nothing
   read r = case read r of
                       Just (y,z) = case read z of
                                     Just (x,s) = Just (PAIR y x, s)
                                     Nothing = Nothing
                       Nothing = Nothing
-  read _ = Nothing
 
 instance serialize (CONS a) | serialize a where
   write (CONS s a) l = [s : write a l]
+  read [] = Nothing
   read [r:s] = case read s of
                   Just (y,z) = Just(CONS r y, z)
                   Nothing = Nothing
@@ -110,7 +111,7 @@ fromBin Leaf = LEFT (CONS "Leaf" UNIT)
 fromBin (Bin a b c) = RIGHT (CONS "Bin" (PAIR a (PAIR b c)))
 
 toBin ::(BinG a) -> Bin a
-toBin (LEFT _) = Leaf
+toBin (LEFT (CONS _ UNIT)) = Leaf
 toBin (RIGHT (CONS _(PAIR a (PAIR b c)))) = Bin a b c
 
 instance serialize (Bin a) | serialize a where // to be improved
@@ -136,6 +137,8 @@ Start =
   ,test [0..4]
   ,test [[True],[]]
   ,test (Bin Leaf True Leaf)
+  ,test [Bin Leaf 2 Leaf]
+  ,test [Bin Leaf [2] Leaf]
   ,test [Bin (Bin Leaf [1] Leaf) [2] (Bin Leaf [3] (Bin Leaf [4,5] Leaf))]
   ,test [Bin (Bin Leaf [1] Leaf) [2] (Bin Leaf [3] (Bin (Bin Leaf [4,5] Leaf) [6,7] (Bin Leaf [8,9] Leaf)))]
   ]
