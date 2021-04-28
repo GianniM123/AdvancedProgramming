@@ -10,6 +10,9 @@ module serialize7start
 
 
 /*
+Gianni Monteban & Martijn Vogelaar
+1047546 & 104391
+
 1.1 Since UNIT can't be anything else then UNIT, option 2 definitly isn't the best solution. Option 1 can be a bit odd, since anything is accepted.
 But anything is in this case only UNIT. We prefer option 3, since it is very clear and it works the same as the other solutions.
 
@@ -20,6 +23,13 @@ But anything is in this case only UNIT. We prefer option 3, since it is very cle
 Leaf -> (CONS UNIT)
 
 No the typesystem wil break since we can't compare two things which aren't of the same datatype.
+
+
+3 Reflection
+
+It goes wrong if we take a 3 dimensional array
+test [[[[2]]]]
+This will break the serialize
 */
 
 import StdEnv, StdMaybe
@@ -54,33 +64,34 @@ instance serialize Int where
 
 instance serialize UNIT where
   write _ c = c
+  read [] = Nothing
   read r = Just (UNIT,r)
-  read _ = Nothing
 
 instance serialize (EITHER a b) | serialize a & serialize b where
-  write (RIGHT b) l = ["RIGHT" : (write b l)]
-  write (LEFT a) l = ["LEFT" : (write a l)]
-  read ["LEFT":r] = let x = read r in 
-                      case x of
-                        Just(y,z) = Just (LEFT y,z)
+  write (RIGHT b) l = write b l
+  write (LEFT a) l = write a l
+  read [] = Nothing
+  read r = case read r of
+            Just(x,y) = Just (RIGHT x , y)
+            Nothing = case read r of
+                        Just (a,b) = Just (LEFT a, b)
                         Nothing = Nothing
-  read ["RIGHT":r] = let x = read r in 
-                      case x of
-                        Just(y,z) = Just (RIGHT y,z)
-                        Nothing = Nothing
-  read _ = Nothing
+
+
+
 
 instance serialize (PAIR a b) | serialize a & serialize b where
   write (PAIR a b) l = let ll = write b l in  write a ll
+  read [] = Nothing
   read r = case read r of
                       Just (y,z) = case read z of
                                     Just (x,s) = Just (PAIR y x, s)
                                     Nothing = Nothing
                       Nothing = Nothing
-  read _ = Nothing
 
 instance serialize (CONS a) | serialize a where
   write (CONS s a) l = [s : write a l]
+  read [] = Nothing
   read [r:s] = case read s of
                   Just (y,z) = Just(CONS r y, z)
                   Nothing = Nothing
@@ -91,15 +102,18 @@ fromList :: [a] -> ListG a
 fromList [] = LEFT (CONS "Nil" UNIT)
 fromList [x:xs] = RIGHT (CONS "Cons" (PAIR x xs))
 
-toList   ::(ListG a) -> [a]
-toList (LEFT (CONS _ UNIT)) = []
-toList (RIGHT (CONS _ (PAIR x xs))) = [x:xs]
-
+toList   ::(ListG a) -> Maybe [a]
+toList (LEFT (CONS "Nil" UNIT)) = Just []
+toList (RIGHT (CONS "Cons" (PAIR x xs))) = Just [x:xs]
+toList _ = Nothing
 
 instance serialize [a] | serialize a where  // to be improved
   write l c =  write (fromList l) c
+  read [] = Nothing
   read l = case read l of
-            Just (x,y) = Just (toList x,y)
+            Just (x,y) = case toList x of
+                        Just z = Just (z,y)
+                        Nothing = Nothing
             Nothing = Nothing
 
 :: Bin a = Leaf | Bin (Bin a) a (Bin a)
@@ -109,14 +123,18 @@ fromBin ::(Bin a) -> BinG a
 fromBin Leaf = LEFT (CONS "Leaf" UNIT)
 fromBin (Bin a b c) = RIGHT (CONS "Bin" (PAIR a (PAIR b c)))
 
-toBin ::(BinG a) -> Bin a
-toBin (LEFT _) = Leaf
-toBin (RIGHT (CONS _(PAIR a (PAIR b c)))) = Bin a b c
+toBin ::(BinG a) -> Maybe (Bin a)
+toBin (LEFT (CONS "Leaf" UNIT)) = Just Leaf
+toBin (RIGHT (CONS "Bin" (PAIR a (PAIR b c)))) = Just( Bin a b c)
+toBin _ = Nothing
 
 instance serialize (Bin a) | serialize a where // to be improved
   write a c = write (fromBin a) c
+  read [] = Nothing
   read l = case read l of
-            Just (x,y) = Just (toBin x,y)
+            Just (x,y) = case toBin x of
+                        Just a = Just (a,y)
+                        Nothing = Nothing
             Nothing = Nothing
 
 instance == (Bin a) | == a where // better use the generic approach
@@ -136,8 +154,13 @@ Start =
   ,test [0..4]
   ,test [[True],[]]
   ,test (Bin Leaf True Leaf)
+  ,test (Bin Leaf 2 Leaf)
+  ,test (Bin Leaf [2] Leaf)
+  ,test [Bin Leaf [2] Leaf]
+  ,test [Bin Leaf 2 Leaf]
   ,test [Bin (Bin Leaf [1] Leaf) [2] (Bin Leaf [3] (Bin Leaf [4,5] Leaf))]
   ,test [Bin (Bin Leaf [1] Leaf) [2] (Bin Leaf [3] (Bin (Bin Leaf [4,5] Leaf) [6,7] (Bin Leaf [8,9] Leaf)))]
+  , test [[[[2]]]]
   ]
 
 test :: a -> ([String],[String]) | serialize, == a
