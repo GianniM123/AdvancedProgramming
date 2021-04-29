@@ -77,3 +77,9 @@ dkms.conf
 .vscode/
 
 */Clean\ System\ Files/*
+*.pbc
+*.bc
+*/skeleton9-www/*
+*.exe
+*.out
+*/skeleton9
