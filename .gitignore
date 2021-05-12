@@ -83,3 +83,6 @@ dkms.conf
 *.exe
 *.out
 */skeleton9
+clean-5/clean5
+clean-5/clean5-data/
+clean-5/clean5-www/
