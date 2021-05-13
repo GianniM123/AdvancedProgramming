@@ -1,3 +1,6 @@
+// Gianni Monteban - Martijn Vogelaar
+// 1047546 -1047391
+
 module clean5
 
 import iTasks
@@ -30,12 +33,8 @@ derive class Eq Date
 
 toDoTaks = sharedStore "ToDo" []
 
-// loginInfo :: Shared [Login]
 loginInfo = sharedStore "myLogins" [{userName="Jan",pass=Password "1234"},
                                     {userName="Patrick",pass=Password "4321"}] 
-
-
-//createTasks = get loginInfo >>- \loginInf -> Hint "Create tasks that will be executed" @>> enterInformation [] >>* [OnAction ActionOk (ifValue (\x -> all (\y -> all (\z -> any (\a -> a.userName == z) loginInf) y.names && y.names <> []) x) (\x -> upd (\l -> l ++ x) toDoTaks))]
 
 
 createTasks = get loginInfo >>- \loginInf -> Hint "Create tasks that will be executed" @>> ((Hint "Enter topic" @>> enterInformation []) -&&- (Hint "Enter date" @>> enterInformation [])) -&&- 
@@ -46,13 +45,6 @@ assignedTasks name = get toDoTaks >>- \tasks -> Hint "Execute one of the followi
                                             >>* [OnAction ActionOk (hasValue (\z -> upd (\y -> filter (\x -> x <> z) y) toDoTaks ))]
 
 
-succesFull  = (viewInformation [] "Succesfully logged in")
-
-accountCreated  = (viewInformation [] "New account created")
-
-error = (viewInformation [] "Wrong password given")
-
-//login :: Task [Login]
 login = Hint "Enter your username and password" @>> enterInformation [] >>* [OnAction (Action "Login") (hasValue (correctLogin loginInfo))]
     where correctLogin logins x = get logins >>- \loginInfo -> if (isMember x loginInfo) (loggedIn x.userName)  (if (any (\a -> x.userName == a.userName) loginInfo) (login) (upd (\l -> [x:l]) logins ||- (loggedIn x.userName)))
 
@@ -64,8 +56,5 @@ loggedIn name = eitherTask (createTasks -||- (assignedTasks name)) (logout) >>- 
                                                                                         Left a = loggedIn name
                                                                                         Right a = logoutScreen
 
-
-//loginMain :: Task [Login]
-//loginMain = withShared loginInfo login
 
 Start w = doTasks login w
