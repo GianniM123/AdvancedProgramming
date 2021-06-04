@@ -44,14 +44,13 @@ instance Action UseState where
     Unlock = UseState \s -> if (s.craneOnQuay) (Result {s & onQuay = [(fromJust s.locked) :s.onQuay], locked = Nothing}) 
                                 (Result {s & onShip = [(fromJust s.locked) :s.onShip], locked = Nothing})
     Wait = UseState \s -> Result s
-    (:.) (UseState a) (UseState b) = \s -> case a s of
-                                                Error a = Error a
-                                                Result x = b x
+    (:.) (UseState a) (UseState b) = UseState \s ->  case a s of
+                                            Error a = Error a
+                                            Result x = b x
 
 
-    While (Expr e) (UseState a) =   
+    While (UseState e) (UseState a) = UseState \s -> Result s
         
-            
 
 
 
@@ -69,6 +68,12 @@ instance Expr Show where
     (>.) (Print a) (Print b) = Print (a ++ [">."] ++ b)
     (+.) (Print a) (Print b) = Print (a ++ ["+."] ++ b)
 
+instance Expr UseState where
+    ContainersBelow = \s -> Result if (s.craneOnQuay) (size s.onQuay) (size s.onShip)
+    Lit t = \s -> Result t
+    (<.) (UseState a) (UseState b) = Result (a < b)
+    (>.) (UseState a) (UseState b) = Result (a > b)
+    (+.) (UseState a) (UseState b) = Result (a + b)
 
 :: High = High
 :: Low = Low
@@ -80,7 +85,7 @@ instance Expr Show where
 :: UseState a = UseState (State -> ErrorOrResult String State)
 
 
-:: State  =
+:: State =
     { onShip :: [Container]
     , onQuay :: [Container]
     , craneUp :: Bool
