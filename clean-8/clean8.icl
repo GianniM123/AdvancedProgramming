@@ -30,26 +30,26 @@ instance Action Show where
     While (Print e) (Print a) = Print (["While"] ++ ["("] ++ e ++ [")"] ++ ["("] ++ a ++ [")"])
 
 instance Action UseState where
-    MoveToShip = UseState \s -> Result {s & craneOnQuay = False}
-    MoveToQuay = UseState \s -> Result {s & craneOnQuay = True}
-    MoveDown = UseState \s -> Result {s & craneUp = False}
-    MoveUp = UseState \s -> Result {s & craneUp = True}
+    MoveToShip = UseState \s -> Result (Step {s & craneOnQuay = False})
+    MoveToQuay = UseState \s -> Result (Step {s & craneOnQuay = True})
+    MoveDown = UseState \s -> Result (Step {s & craneUp = False})
+    MoveUp = UseState \s -> Result (Step {s & craneUp = True})
     Lock = UseState \s -> if (s.craneOnQuay) (case s.onQuay of
                                     [] = Error "No containers on quay"
-                                    [x:xs] = Result {s & onQuay = xs, locked = Just x}) 
+                                    [x:xs] = Result (Step {s & onQuay = xs, locked = Just x})) 
                                 (case s.onShip of
                                     [] = Error "No containers on ship"
-                                    [x:xs] = Result {s & onShip = xs, locked = Just x})
+                                    [x:xs] = Result (Step {s & onShip = xs, locked = Just x}))
 
-    Unlock = UseState \s -> if (s.craneOnQuay) (Result {s & onQuay = [(fromJust s.locked) :s.onQuay], locked = Nothing}) 
-                                (Result {s & onShip = [(fromJust s.locked) :s.onShip], locked = Nothing})
-    Wait = UseState \s -> Result s
+    Unlock = UseState \s -> if (s.craneOnQuay) (Result (Step {s & onQuay = [(fromJust s.locked) :s.onQuay], locked = Nothing})) 
+                                (Result (Step {s & onShip = [(fromJust s.locked) :s.onShip], locked = Nothing}))
+    Wait = UseState \s -> Result (Step s)
     (:.) (UseState a) (UseState b) = UseState \s ->  case a s of
-                                            Error a = Error a
-                                            Result x = b x
+                                                    Result (Step x) = b x
+                                                    _ = Error "Error during execution"
+                                                
 
-
-    While (UseState e) (UseState a) = UseState \s -> Result s
+    While (UseState e) (UseState a) = UseState \s -> Result (Step s)
         
 
 
@@ -69,20 +69,26 @@ instance Expr Show where
     (+.) (Print a) (Print b) = Print (a ++ ["+."] ++ b)
 
 instance Expr UseState where
-    ContainersBelow = \s -> Result if (s.craneOnQuay) (size s.onQuay) (size s.onShip)
-    Lit t = \s -> Result t
-    (<.) (UseState a) (UseState b) = Result (a < b)
-    (>.) (UseState a) (UseState b) = Result (a > b)
-    (+.) (UseState a) (UseState b) = Result (a + b)
+    ContainersBelow = UseState \s -> Result if (s.craneOnQuay) (length s.onQuay) (length s.onShip)
+    Lit t = UseState \s -> Result t
+    (<.) (UseState a) (UseState b) = UseState \s -> case a s of 
+                                                        Result x = case b s of
+                                                                        Result y = Result (x < y)
+    (>.) (UseState a) (UseState b) = UseState \s -> case a s of 
+                                                        Result x = case b s of
+                                                                        Result y = Result (x > y)
+    (+.) (UseState a) (UseState b) = UseState \s -> case a s of 
+                                                        Result x = case b s of
+                                                                        Result y = Result (x + y)
 
 :: High = High
 :: Low = Low
 
-:: Step init target = Step init target
+:: Step init target = Step State
 
-:: ErrorOrResult e r = Error e | Result r
+:: ErrorOrResultOrExpr e r = Error e | Result r
 
-:: UseState a = UseState (State -> ErrorOrResult String State)
+:: UseState a = UseState (State -> ErrorOrResultOrExpr String a )
 
 
 :: State =
